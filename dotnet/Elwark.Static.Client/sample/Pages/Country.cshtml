@@ -1,0 +1,74 @@
+@page
+@model Elwark.Static.Client.Sample.Pages.Country
+
+@{
+    ViewData["Title"] = "Country";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-2">
+            <h6>Countries</h6>
+            @foreach (var country in Model.Countries)
+            {
+                <dl>
+                    <dt>@nameof(country.Name)</dt>
+                    <dd>@country.Name.Common</dd>
+                    <dt>@nameof(country.Borders)</dt>
+                    <dd>@(string.Join(", ", country.Borders))</dd>
+                </dl>
+            }
+        </div>
+        <div class="col-2">
+            <h6>Capital</h6>
+            <dl>
+                <dt>@nameof(Model.Capital.Name)</dt>
+                <dd>@Model.Capital.Name.Common</dd>
+                <dt>@nameof(Model.Capital.Borders)</dt>
+                <dd>@(string.Join(", ", Model.Capital.Borders))</dd>
+            </dl>
+        </div>
+        <div class="col-2">
+            <h6>Currency</h6>
+            @foreach (var country in Model.Currency)
+            {
+                <dl>
+                    <dt>@nameof(country.Name)</dt>
+                    <dd>@country.Name.Common</dd>
+                    <dt>@nameof(country.Borders)</dt>
+                    <dd>@(string.Join(", ", country.Borders))</dd>
+                </dl>
+            }
+        </div>
+        <div class="col-2">
+            <h6>Regions</h6>
+            @foreach (var country in Model.Regions)
+            {
+                <dl>
+                    <dt>@nameof(country.Name)</dt>
+                    <dd>@country.Name.Common</dd>
+                    <dt>@nameof(country.Borders)</dt>
+                    <dd>@(string.Join(", ", country.Borders))</dd>
+                </dl>
+            }
+        </div>
+        <div class="col-2">
+            <h6>Code</h6>
+            <dl>
+                <dt>@nameof(Model.CountryCode.Name)</dt>
+                <dd>@Model.CountryCode.Name.Common</dd>
+                <dt>@nameof(Model.CountryCode.Borders)</dt>
+                <dd>@(string.Join(", ", Model.CountryCode.Borders))</dd>
+            </dl>
+        </div>
+        <div class="col-2">
+            <h6>Name</h6>
+            <dl>
+                <dt>@nameof(Model.CountryName.Name)</dt>
+                <dd>@Model.CountryName.Name.Common</dd>
+                <dt>@nameof(Model.CountryName.Borders)</dt>
+                <dd>@(string.Join(", ", Model.CountryName.Borders))</dd>
+            </dl>
+        </div>
+    </div>
+</div>
