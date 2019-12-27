@@ -17,15 +17,15 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100-preview3-014645'
+          dotnet-version: '3.1.100'
 
       - name: Build
         run: dotnet build --configuration Release
-        working-directory: dotnet/Elwark.Static.Client
+        working-directory: src
 
       - name: Pack
         run: dotnet pack -c Release -o out
-        working-directory: dotnet/Elwark.Static.Client
+        working-directory: src
 
       - name: Push generated package to Nuget registry
         run: |
@@ -33,4 +33,4 @@ jobs:
           do  
             dotnet nuget push $f --api-key ${{ secrets.NUGET_TOKEN }} -s https://api.nuget.org/v3/index.json --skip-duplicate
           done
-        working-directory: dotnet/Elwark.Static.Client
+        working-directory: src

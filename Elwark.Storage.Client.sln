@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elwark.Storage.Client", "src\Elwark.Storage.Client.csproj", "{6E741855-F7AE-4475-BA33-C60E7E25A639}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB8FF9CF-BC0E-4C8C-B66D-18A108E8A9CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E818E46D-3CA8-4CCB-9360-72213F1EBCD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elwark.Storage.Client.Test", "test\Elwark.Storage.Client.Test\Elwark.Storage.Client.Test.csproj", "{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E741855-F7AE-4475-BA33-C60E7E25A639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E741855-F7AE-4475-BA33-C60E7E25A639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E741855-F7AE-4475-BA33-C60E7E25A639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E741855-F7AE-4475-BA33-C60E7E25A639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E741855-F7AE-4475-BA33-C60E7E25A639} = {CB8FF9CF-BC0E-4C8C-B66D-18A108E8A9CA}
+		{693BD2D2-79EF-4DE1-AC8F-3540EC78DB94} = {E818E46D-3CA8-4CCB-9360-72213F1EBCD8}
+	EndGlobalSection
+EndGlobal
