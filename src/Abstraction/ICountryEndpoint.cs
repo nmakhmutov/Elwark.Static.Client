@@ -9,6 +9,8 @@ namespace Elwark.Storage.Client.Abstraction
     {
         Task<IReadOnlyCollection<Country>> GetAllAsync(CancellationToken cancellationToken = default);
         
+        Task<IReadOnlyCollection<Country>> GetByCodesAsync(string[] codes, CancellationToken cancellationToken = default);
+        
         Task<Country> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
         
         Task<Country> GetByNameAsync(string name, CancellationToken cancellationToken = default);

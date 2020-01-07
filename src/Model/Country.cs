@@ -64,13 +64,13 @@ namespace Elwark.Storage.Client.Model
         public RegionalBloc[] RegionalBlocs { get; set; }
 
         [JsonProperty("subregion")]
-        public string Subregion { get; set; }
+        public string SubRegion { get; set; }
 
         [JsonProperty("topLevelDomain")]
         public string[] TopLevelDomain { get; set; }
 
         [JsonProperty("translations")]
-        public Dictionary<string, Translation> Translations { get; set; }
+        public Translation[] Translations { get; set; }
     }
     
     public sealed class CountryName
@@ -82,16 +82,22 @@ namespace Elwark.Storage.Client.Model
         public string Official { get; set; }
 
         [JsonProperty("native")]
-        public Dictionary<string, Translation> Native { get; set; }
+        public Translation[] Native { get; set; }
     }
     
     public sealed class Translation
     {
+        [JsonProperty("language")]
+        public string Language { get; set; }
+        
         [JsonProperty("common")]
         public string Common { get; set; }
 
         [JsonProperty("official")]
         public string Official { get; set; }
+
+        public override string ToString() =>
+            $"({Language}) {Common}";
     }
 
     public sealed class RegionalBloc

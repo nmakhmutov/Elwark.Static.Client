@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Elwark.Storage.Client.Abstraction;
 using Elwark.Storage.Client.Model;
+using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 
 namespace Elwark.Storage.Client.Endpoints
@@ -19,8 +21,18 @@ namespace Elwark.Storage.Client.Endpoints
 
         public async Task<IReadOnlyCollection<Country>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var response = await _client.GetStringAsync(Section);
-            return JsonConvert.DeserializeObject<Country[]>(response);
+            var response = await _client.GetAsync(Section, cancellationToken);
+            
+            return await response.Convert<Country[]>();
+        }
+        
+        public async Task<IReadOnlyCollection<Country>> GetByCodesAsync(string[] codes, CancellationToken cancellationToken)
+        {
+            var query = new QueryBuilder(codes.Select(x => new KeyValuePair<string, string>(nameof(codes), x.ToString())));
+
+            var response = await _client.GetAsync($"{Section}{query}", cancellationToken);
+
+            return await response.Convert<Country[]>();
         }
 
         public async Task<Country> GetByCodeAsync(string code, CancellationToken cancellationToken)
