@@ -4,6 +4,14 @@ namespace Elwark.Storage.Client.Model
 {
     public sealed class Currency
     {
+        public Currency(string code, byte decimalDigits, CurrencyName name, Symbol symbol)
+        {
+            Code = code;
+            DecimalDigits = decimalDigits;
+            Name = name;
+            Symbol = symbol;
+        }
+
         [JsonProperty("code")]
         public string Code { get; set; }
 
@@ -19,6 +27,12 @@ namespace Elwark.Storage.Client.Model
 
     public sealed class CurrencyName
     {
+        public CurrencyName(string singular, string plural)
+        {
+            Singular = singular;
+            Plural = plural;
+        }
+
         [JsonProperty("singular")]
         public string Singular { get; set; }
 
@@ -28,6 +42,12 @@ namespace Elwark.Storage.Client.Model
 
     public sealed class Symbol
     {
+        public Symbol(string common, string native)
+        {
+            Common = common;
+            Native = native;
+        }
+
         [JsonProperty("common")]
         public string Common { get; set; }
 

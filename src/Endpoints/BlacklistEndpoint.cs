@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -11,37 +12,35 @@ namespace Elwark.Storage.Client.Endpoints
         private const string Section = "blacklist";
         private readonly HttpClient _client;
 
-        public BlacklistEndpoint(HttpClient client)
-        {
+        public BlacklistEndpoint(HttpClient client) =>
             _client = client;
-        }
 
         public async Task<IReadOnlyCollection<string>> GetPasswordsAsync(CancellationToken cancellationToken)
         {
             var response = await _client.GetAsync($"{Section}/password", cancellationToken);
 
-            return await response.Convert<string[]>();
+            return await response.Convert(Array.Empty<string>);
         }
 
         public async Task<IReadOnlyCollection<string>> GetEmailDomainsAsync(CancellationToken cancellationToken)
         {
             var response = await _client.GetAsync($"{Section}/email", cancellationToken);
 
-            return await response.Convert<string[]>();
+            return await response.Convert(Array.Empty<string>);
         }
 
         public async Task<bool> IsForbiddenPasswordAsync(string password, CancellationToken cancellationToken)
         {
             var response = await _client.GetAsync($"{Section}/password/{password}", cancellationToken);
 
-            return await response.Convert<bool>();
+            return await response.Convert(() => true);
         }
 
         public async Task<bool> IsForbiddenEmailDomainAsync(string domain, CancellationToken cancellationToken)
         {
             var response = await _client.GetAsync($"{Section}/email/{domain}", cancellationToken);
 
-            return await response.Convert<bool>();
+            return await response.Convert(() => true);
         }
     }
 }

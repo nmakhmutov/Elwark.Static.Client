@@ -6,26 +6,26 @@ namespace Elwark.Storage.Client.Implementation
 {
     internal class IconSizes : IIconSizes
     {
+        private readonly Image _favicon;
+        private readonly Image _size114X114;
+        private readonly Image _size120X120;
+        private readonly Image _size144X144;
+        private readonly Image _size150X150;
+        private readonly Image _size152X152;
         private readonly Image _size16X16;
+        private readonly Image _size180X180;
+        private readonly Image _size192X192;
+        private readonly Image _size310X310;
         private readonly Image _size32X32;
         private readonly Image _size36X36;
         private readonly Image _size48X48;
+        private readonly Image _size500X500;
         private readonly Image _size57X57;
         private readonly Image _size60X60;
         private readonly Image _size70X70;
         private readonly Image _size72X72;
         private readonly Image _size76X76;
         private readonly Image _size96X96;
-        private readonly Image _size114X114;
-        private readonly Image _size120X120;
-        private readonly Image _size144X144;
-        private readonly Image _size150X150;
-        private readonly Image _size152X152;
-        private readonly Image _size180X180;
-        private readonly Image _size192X192;
-        private readonly Image _size310X310;
-        private readonly Image _size500X500;
-        private readonly Image _favicon;
 
         public IconSizes(HttpClient client, string path)
         {

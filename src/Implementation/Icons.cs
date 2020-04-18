@@ -7,8 +7,8 @@ namespace Elwark.Storage.Client.Implementation
     internal class Icons : IIcons
     {
         private const string Section = "icons";
-        private readonly UserIcon _userIcon;
         private readonly ElwarkIcons _elwarkIcons;
+        private readonly UserIcon _userIcon;
 
         public Icons(HttpClient client, string path)
         {
@@ -18,7 +18,7 @@ namespace Elwark.Storage.Client.Implementation
         }
 
         public IUserIcon User => _userIcon;
-        
+
         public IElwarkIcons Elwark => _elwarkIcons;
     }
 }

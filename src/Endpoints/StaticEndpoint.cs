@@ -9,10 +9,8 @@ namespace Elwark.Storage.Client.Endpoints
         private const string Section = "static";
         private readonly Icons _icons;
 
-        public StaticEndpoint(HttpClient client)
-        {
+        public StaticEndpoint(HttpClient client) =>
             _icons = new Icons(client, Section);
-        }
 
         public IIcons Icons => _icons;
     }

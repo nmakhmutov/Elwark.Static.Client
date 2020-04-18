@@ -9,10 +9,8 @@ namespace Elwark.Storage.Client.Implementation
         private const string Section = "user";
         private readonly Image _default;
 
-        public UserIcon(HttpClient client, string path)
-        {
+        public UserIcon(HttpClient client, string path) =>
             _default = new Image(client, Path.Combine(path, Section, "default.png"));
-        }
 
         public IImage Default => _default;
     }

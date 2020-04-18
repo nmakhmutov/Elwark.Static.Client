@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -12,30 +13,29 @@ namespace Elwark.Storage.Client.Endpoints
         private const string Section = "languages";
         private readonly HttpClient _client;
 
-        public LanguageEndpoint(HttpClient client)
-        {
+        public LanguageEndpoint(HttpClient client) =>
             _client = client;
-        }
 
-        public async Task<IReadOnlyCollection<Language>> GetPrimariesAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyCollection<Language>> GetPrimariesAsync(
+            CancellationToken cancellationToken = default)
         {
             var response = await _client.GetAsync(Section, cancellationToken);
 
-            return await response.Convert<Language[]>();
+            return await response.Convert(Array.Empty<Language>);
         }
 
         public async Task<IReadOnlyCollection<Language>> GetFullAsync(CancellationToken cancellationToken = default)
         {
             var response = await _client.GetAsync($"{Section}/full", cancellationToken);
 
-            return await response.Convert<Language[]>();
+            return await response.Convert(Array.Empty<Language>);
         }
 
-        public async Task<Language> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
+        public async Task<Language?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             var response = await _client.GetAsync($"{Section}/code/{code}", cancellationToken);
 
-            return await response.Convert<Language>();
+            return await response.Convert<Language?>(() => null);
         }
     }
 }

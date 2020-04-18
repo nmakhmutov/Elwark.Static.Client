@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Elwark.Storage.Client.Abstraction;
 
@@ -17,6 +18,9 @@ namespace Elwark.Storage.Client.Implementation
         }
 
         public Uri Path { get; }
+
+        public Task<HttpResponseMessage> GetAsync(CancellationToken cancellationToken) =>
+            _client.GetAsync(Path, cancellationToken);
 
         public Task<Stream> GetStreamAsync() =>
             _client.GetStreamAsync(Path);

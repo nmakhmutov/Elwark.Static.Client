@@ -11,6 +11,6 @@ namespace Elwark.Storage.Client.Model
         HDplus,
         Fhd,
         Qhd,
-        Uhd,
+        Uhd
     }
 }

@@ -7,19 +7,19 @@ namespace Elwark.Storage.Client
 {
     internal class ElwarkStorageClient : IElwarkStorageClient
     {
-        private readonly CountryEndpoint _countryEndpoint;
         private readonly BlacklistEndpoint _blacklistEndpoint;
+        private readonly CountryEndpoint _countryEndpoint;
         private readonly CurrencyEndpoint _currencyEndpoint;
-        private readonly LanguageEndpoint _languageEndpoint;
-        private readonly TimezoneEndpoint _timezoneEndpoint;
-        private readonly StaticEndpoint _staticEndpoint;
         private readonly ImageEndpoint _imageEndpoint;
+        private readonly LanguageEndpoint _languageEndpoint;
+        private readonly StaticEndpoint _staticEndpoint;
+        private readonly TimezoneEndpoint _timezoneEndpoint;
 
         public ElwarkStorageClient(HttpClient client)
         {
-            if (client == null) 
+            if (client is null)
                 throw new ArgumentNullException(nameof(client));
-            
+
             _countryEndpoint = new CountryEndpoint(client);
             _blacklistEndpoint = new BlacklistEndpoint(client);
             _currencyEndpoint = new CurrencyEndpoint(client);
@@ -27,7 +27,6 @@ namespace Elwark.Storage.Client
             _timezoneEndpoint = new TimezoneEndpoint(client);
             _staticEndpoint = new StaticEndpoint(client);
             _imageEndpoint = new ImageEndpoint(client);
-            
         }
 
         public ICountryEndpoint Country =>

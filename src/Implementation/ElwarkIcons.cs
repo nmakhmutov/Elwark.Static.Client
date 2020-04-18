@@ -17,7 +17,7 @@ namespace Elwark.Storage.Client.Implementation
         }
 
         public IIconSizes Primary => _primary;
-        
+
         public IIconSizes White => _white;
     }
 }

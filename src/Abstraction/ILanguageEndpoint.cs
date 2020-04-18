@@ -11,6 +11,6 @@ namespace Elwark.Storage.Client.Abstraction
 
         Task<IReadOnlyCollection<Language>> GetFullAsync(CancellationToken cancellationToken = default);
 
-        Task<Language> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
+        Task<Language?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
     }
 }

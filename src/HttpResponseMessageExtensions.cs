@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,20 +8,18 @@ namespace Elwark.Storage.Client
 {
     internal static class HttpResponseMessageExtensions
     {
-        public static async Task<T> Convert<T>(this HttpResponseMessage message)
-        {
-            switch (message.StatusCode)
+        public static async Task<T> Convert<T>(this HttpResponseMessage message, Func<T> empty) =>
+            message.StatusCode switch
             {
-                case HttpStatusCode.OK:
-                    return JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync());
+                HttpStatusCode.OK => JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync()),
+                HttpStatusCode.NotFound => empty(),
+                _ => EnsureSuccessStatusCode(message, empty)
+            };
 
-                case HttpStatusCode.NotFound:
-                    return default;
-
-                default:
-                    message.EnsureSuccessStatusCode();
-                    return default;
-            }
+        private static T EnsureSuccessStatusCode<T>(HttpResponseMessage message, Func<T> empty)
+        {
+            message.EnsureSuccessStatusCode();
+            return empty();
         }
     }
 }

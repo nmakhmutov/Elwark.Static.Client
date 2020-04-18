@@ -9,8 +9,8 @@ namespace Elwark.Storage.Client.Abstraction
     {
         Task<IReadOnlyCollection<Currency>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<Currency> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
+        Task<Currency?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
 
-        Task<Currency> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<Currency?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     }
 }

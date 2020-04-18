@@ -9,7 +9,7 @@ namespace Elwark.Storage.Client.Abstraction
     {
         Task<IReadOnlyCollection<Timezone>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<Timezone> GetByTimezoneNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<Timezone?> GetByTimezoneNameAsync(string name, CancellationToken cancellationToken = default);
 
         Task<IReadOnlyCollection<Timezone>> GetByCountryCodeAsync(string code,
             CancellationToken cancellationToken = default);
