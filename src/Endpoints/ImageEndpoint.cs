@@ -26,12 +26,5 @@ namespace Elwark.Storage.Client.Endpoints
 
         public IImage GetRandom(uint width, uint height) =>
             new Image(_client, $"{Section}/random/{width}/{height}");
-
-        public async Task<IReadOnlyCollection<Uri>> GetAdminImagesAsync(CancellationToken cancellationToken)
-        {
-            var response = await _client.GetAsync($"{Section}/admin", cancellationToken);
-
-            return await response.Convert(Array.Empty<Uri>);
-        }
     }
 }

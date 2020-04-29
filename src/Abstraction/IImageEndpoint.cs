@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Elwark.Storage.Client.Model;
 
 namespace Elwark.Storage.Client.Abstraction
@@ -13,7 +9,5 @@ namespace Elwark.Storage.Client.Abstraction
         IImage GetRandom(ImageResolution resolution, ImageOrientation orientation = ImageOrientation.Landscape);
 
         IImage GetRandom(uint width, uint height);
-
-        Task<IReadOnlyCollection<Uri>> GetAdminImagesAsync(CancellationToken cancellationToken = default);
     }
 }
