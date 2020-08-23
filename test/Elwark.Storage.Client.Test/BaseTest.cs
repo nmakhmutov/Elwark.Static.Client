@@ -7,7 +7,6 @@ namespace Elwark.Storage.Client.Test
     public abstract class BaseTest : IDisposable
     {
         private readonly Uri _host = new Uri("http://localhost:3000");
-        protected TestServer Server { get; }
 
         public BaseTest()
         {
@@ -17,6 +16,8 @@ namespace Elwark.Storage.Client.Test
 
             Server = new TestServer(builder);
         }
+
+        protected TestServer Server { get; }
 
         public void Dispose() =>
             Server.Dispose();

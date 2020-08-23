@@ -32,6 +32,46 @@ namespace Elwark.Storage.Client.Test
         }
 
         [Fact]
+        public async Task Check_by_2alpha_country_code_success()
+        {
+            var client = Server.Services.GetService<IElwarkStorageClient>();
+
+            const string code = "us";
+            var result = await client.Country.GetByCodeAsync(code);
+
+            Assert.NotNull(result);
+            Assert.Equal("US", result.Alpha2Code);
+            Assert.Equal("USA", result.Alpha3Code);
+            Assert.Collection(result.Currencies, s => Assert.Equal("USD", s));
+        }
+
+        [Fact]
+        public async Task Check_by_3alpha_country_code_success()
+        {
+            var client = Server.Services.GetService<IElwarkStorageClient>();
+
+            const string code = "prt";
+            var result = await client.Country.GetByCodeAsync(code);
+
+            Assert.NotNull(result);
+            Assert.Equal("PT", result.Alpha2Code);
+            Assert.Equal("PRT", result.Alpha3Code);
+            Assert.Collection(result.Currencies, s => Assert.Equal("EUR", s));
+        }
+
+        [Fact]
+        public async Task Check_by_capital_success()
+        {
+            var client = Server.Services.GetService<IElwarkStorageClient>();
+
+            const string capital = "London";
+            var result = await client.Country.GetByCapitalAsync(capital);
+
+            Assert.NotNull(result);
+            Assert.Equal(capital, result.Capital);
+        }
+
+        [Fact]
         public async Task Check_by_codes_countries_success()
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
@@ -58,26 +98,23 @@ namespace Elwark.Storage.Client.Test
         }
 
         [Fact]
-        public async Task Check_by_non_exists_codes_countries_success()
+        public async Task Check_by_country_name_success()
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
 
-            var codes = new[] {"qq", "aa", "dd", "random"};
-            var result = await client.Country.GetByCodesAsync(codes);
-
-            Assert.Empty(result);
+            var result = await client.Country.GetByNameAsync("Spain");
+            Assert.NotNull(result);
+            Assert.Equal("ES", result.Alpha2Code);
+            Assert.Equal("ESP", result.Alpha3Code);
         }
 
         [Fact]
-        public async Task Check_by_capital_success()
+        public async Task Check_by_currency_code_success()
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
 
-            const string capital = "London";
-            var result = await client.Country.GetByCapitalAsync(capital);
-            
-            Assert.NotNull(result);
-            Assert.Equal(capital, result.Capital);
+            var result = await client.Country.GetByCurrencyAsync("EUR");
+            Assert.NotEmpty(result);
         }
 
         [Fact]
@@ -91,45 +128,6 @@ namespace Elwark.Storage.Client.Test
         }
 
         [Fact]
-        public async Task Check_by_2alpha_country_code_success()
-        {
-            var client = Server.Services.GetService<IElwarkStorageClient>();
-
-            const string code = "us";
-            var result = await client.Country.GetByCodeAsync(code);
-            
-            Assert.NotNull(result);
-            Assert.Equal("US", result.Alpha2Code);
-            Assert.Equal("USA", result.Alpha3Code);
-            Assert.Collection(result.Currencies, s => Assert.Equal("USD", s));
-        }
-        
-        [Fact]
-        public async Task Check_by_3alpha_country_code_success()
-        {
-            var client = Server.Services.GetService<IElwarkStorageClient>();
-
-            const string code = "prt";
-            var result = await client.Country.GetByCodeAsync(code);
-            
-            Assert.NotNull(result);
-            Assert.Equal("PT", result.Alpha2Code);
-            Assert.Equal("PRT", result.Alpha3Code);
-            Assert.Collection(result.Currencies, s => Assert.Equal("EUR", s));
-        }
-
-        [Fact]
-        public async Task Check_by_country_name_success()
-        {
-            var client = Server.Services.GetService<IElwarkStorageClient>();
-
-            var result = await client.Country.GetByNameAsync("Spain");
-            Assert.NotNull(result);
-            Assert.Equal("ES", result.Alpha2Code);
-            Assert.Equal("ESP", result.Alpha3Code);
-        }
-        
-        [Fact]
         public async Task Check_by_non_existent_country_name_success()
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
@@ -139,20 +137,22 @@ namespace Elwark.Storage.Client.Test
         }
 
         [Fact]
-        public async Task Check_by_currency_code_success()
-        {
-            var client = Server.Services.GetService<IElwarkStorageClient>();
-
-            var result = await client.Country.GetByCurrencyAsync("EUR");
-            Assert.NotEmpty(result);
-        }
-        
-        [Fact]
         public async Task Check_by_non_existent_currency_code_success()
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
 
             var result = await client.Country.GetByCurrencyAsync("non_existent_currency_code");
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task Check_by_non_exists_codes_countries_success()
+        {
+            var client = Server.Services.GetService<IElwarkStorageClient>();
+
+            var codes = new[] {"qq", "aa", "dd", "random"};
+            var result = await client.Country.GetByCodesAsync(codes);
+
             Assert.Empty(result);
         }
 

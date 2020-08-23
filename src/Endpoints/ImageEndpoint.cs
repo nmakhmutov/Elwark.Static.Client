@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Elwark.Storage.Client.Abstraction;
 using Elwark.Storage.Client.Implementation;
 using Elwark.Storage.Client.Model;

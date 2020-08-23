@@ -33,7 +33,7 @@ namespace Elwark.Storage.Client.Test
         {
             var client = Server.Services.GetService<IElwarkStorageClient>();
             var result = await client.Images.GetRandom().GetBytesAsync();
-            
+
             Assert.NotEmpty(result);
         }
     }
