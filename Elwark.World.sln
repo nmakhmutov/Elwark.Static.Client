@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FC87501A-274A-48C9-BCDB-09273D61ACB1}"
+	ProjectSection(SolutionItems) = preProject
+		src\docker-compose.yml = src\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "World.Api", "src\World.Api\World.Api.csproj", "{2C95E19B-56CF-470B-ABBB-15E5213F26D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2C95E19B-56CF-470B-ABBB-15E5213F26D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C95E19B-56CF-470B-ABBB-15E5213F26D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C95E19B-56CF-470B-ABBB-15E5213F26D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C95E19B-56CF-470B-ABBB-15E5213F26D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2C95E19B-56CF-470B-ABBB-15E5213F26D5} = {FC87501A-274A-48C9-BCDB-09273D61ACB1}
+	EndGlobalSection
+EndGlobal
