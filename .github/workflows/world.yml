@@ -1,0 +1,24 @@
+name: World api
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  WORKING_DIRECTORY: ./src
+
+jobs:
+  people_api:
+    name: Docker API
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout Github Action
+        uses: actions/checkout@master
+
+      - name: Compose build world.api
+        run: sudo -E docker-compose build world.api
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        shell: bash
+        env:
+          TAG: latest

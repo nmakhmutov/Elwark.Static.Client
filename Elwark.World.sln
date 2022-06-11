@@ -7,6 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FC87501A-274
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "World.Api", "src\World.Api\World.Api.csproj", "{2C95E19B-56CF-470B-ABBB-15E5213F26D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{3841FFEC-BAAC-437D-AD0D-3C445E66C7F1}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\world.yml = .github\workflows\world.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
