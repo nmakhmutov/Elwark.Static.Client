@@ -31,8 +31,8 @@ public sealed class Country
 
     public HashSet<CountryTranslation> Translations { get; private set; }
 
-    public void AddTranslation(string language, string official, string common) =>
-        Translations.Add(new CountryTranslation(Id, language.ToLowerInvariant(), official, common));
+    public void AddTranslation(string language, string common, string official) =>
+        Translations.Add(new CountryTranslation(Id, language.ToLowerInvariant(), common, official));
 
     public override string ToString() =>
         $"({Alpha2}) {Translations.First().Common}";

@@ -8,10 +8,8 @@ internal sealed class WorldDbContextSeed
 {
     private readonly WorldDbContext _dbContext;
 
-    public WorldDbContextSeed(WorldDbContext dbContext)
-    {
+    public WorldDbContextSeed(WorldDbContext dbContext) =>
         _dbContext = dbContext;
-    }
 
     public async Task SeedAsync()
     {
@@ -19,8 +17,9 @@ internal sealed class WorldDbContextSeed
             return;
 
         var client = new HttpClient();
-        var countries = await client
-            .GetFromJsonAsync<CountryDto[]>("https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations");
+        var countries = await client.GetFromJsonAsync<CountryDto[]>(
+            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations"
+        );
 
         if (countries is null)
             return;
@@ -31,15 +30,13 @@ internal sealed class WorldDbContextSeed
                 continue;
 
             var country = new Country(int.Parse(item.Ccn3), item.Cca2, item.Cca3, item.Flags["svg"]);
-            country.AddTranslation("en", item.Name.Official, item.Name.Common);
+            country.AddTranslation("en", item.Name.Common, item.Name.Official);
 
             foreach (var translation in item.Translations)
             {
                 var language = new CultureInfo(translation.Key).TwoLetterISOLanguageName;
-                if (language.Length != 2)
-                    continue;
-
-                country.AddTranslation(language, translation.Value.Official, translation.Value.Common);
+                if (language.Length == 2)
+                    country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
             }
 
             await _dbContext.Countries.AddAsync(country);

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Text;
 using Npgsql;
 
 namespace World.Api.Services.Country;
@@ -15,12 +16,12 @@ internal sealed class CountryService
     {
         var sql = language == "en"
             ? @"
-SELECT c.alpha2, ctr.common
+SELECT c.alpha2, ctr.common, c.flag
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = 'en'
 ORDER BY ctr.common;"
             : @"
-SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name
+SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name, c.flag
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
          LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'en'
@@ -39,13 +40,16 @@ ORDER BY name;
         while (await reader.ReadAsync(ct))
         {
             ct.ThrowIfCancellationRequested();
-            yield return new CountryOverview(reader.GetString(0), reader.GetString(1));
+            yield return new CountryOverview(reader.GetString(0), reader.GetString(1), reader.GetString(2));
         }
     }
 
     public async Task<CountryDetails?> GetAsync(string code, string language, CancellationToken ct = default)
     {
-        var sql = language == "en"
+        if (code.Length is < 2 or > 3)
+            return null;
+
+        var sb = new StringBuilder(language == "en"
             ? @"
 SELECT c.id,
        c.alpha2,
@@ -55,8 +59,7 @@ SELECT c.id,
        flag
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
-WHERE c.alpha2 = $2
-LIMIT 1;"
+"
             : @"
 SELECT c.id,
        c.alpha2,
@@ -67,11 +70,12 @@ SELECT c.id,
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
          LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'en'
-WHERE c.alpha2 = $2
-LIMIT 1;";
+");
+
+        sb.Append(code.Length == 2 ? " WHERE c.alpha2 = $2 LIMIT 1;" : " WHERE c.alpha3 = $2 LIMIT 1;");
 
         await using var connection = new NpgsqlConnection(_connection);
-        await using var command = new NpgsqlCommand(sql, connection)
+        await using var command = new NpgsqlCommand(sb.ToString(), connection)
         {
             Parameters =
             {

@@ -3,7 +3,7 @@ version: '3.8'
 networks:
   elwarknetwork:
     name: elwark_network
-    
+
 services:
   world.api:
     container_name: "world_api"
