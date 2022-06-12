@@ -27,6 +27,11 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(3)
             .IsRequired();
 
+        builder.Property(x => x.Flag)
+            .HasColumnName("flag")
+            .HasMaxLength(1024)
+            .IsRequired();
+
         builder.HasMany(x => x.Translations)
             .WithOne()
             .HasForeignKey(x => x.CountryId)

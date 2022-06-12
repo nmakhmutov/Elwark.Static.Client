@@ -45,7 +45,9 @@ namespace World.Api.Infrastructure.Migrations
 
                     b.Property<string>("Flag")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
+                        .HasColumnName("flag");
 
                     b.HasKey("Id");
 

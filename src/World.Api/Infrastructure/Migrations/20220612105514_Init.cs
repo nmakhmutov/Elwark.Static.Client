@@ -20,7 +20,7 @@ namespace World.Api.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     alpha2 = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     alpha3 = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    Flag = table.Column<string>(type: "text", nullable: false)
+                    flag = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
                 {

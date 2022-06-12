@@ -12,7 +12,7 @@ using World.Api.Infrastructure;
 namespace World.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(WorldDbContext))]
-    [Migration("20220611101223_Init")]
+    [Migration("20220612105514_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -48,7 +48,9 @@ namespace World.Api.Infrastructure.Migrations
 
                     b.Property<string>("Flag")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
+                        .HasColumnName("flag");
 
                     b.HasKey("Id");
 

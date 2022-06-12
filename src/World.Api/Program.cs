@@ -1,4 +1,7 @@
 using System.Globalization;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -7,7 +10,24 @@ using World.Api.Infrastructure;
 using World.Api.Services.Country;
 
 const string appName = "Worlds.Api";
+const string mainCors = "MainCORS";
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddCorrelationId(options =>
+    {
+        options.UpdateTraceIdentifier = true;
+        options.AddToLoggingScope = true;
+    })
+    .WithTraceIdentifierProvider();
+
+builder.Services
+    .AddCors(options =>
+        options.AddPolicy(mainCors, policyBuilder => policyBuilder
+            .WithOrigins(builder.Configuration.GetRequiredSection("Cors").Get<string[]>()!)
+            .WithMethods(HttpMethods.Get)
+            .AllowAnyHeader()
+        ));
 
 builder.Services
     .AddRequestLocalization(options =>
@@ -54,7 +74,14 @@ await using (var scope = app.Services.CreateAsyncScope())
     await new WorldDbContextSeed(dbContext).SeedAsync();
 }
 
-app.UseRequestLocalization();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        ForwardLimit = 10
+    })
+    .UseCors(mainCors)
+    .UseCorrelationId()
+    .UseRequestLocalization();
 
 app.MapCountryEndpoints()
     .MapTimeZoneEndpoints();
