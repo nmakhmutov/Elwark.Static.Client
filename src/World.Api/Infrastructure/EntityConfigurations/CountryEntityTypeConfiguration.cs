@@ -15,7 +15,8 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.HasAlternateKey(x => x.Alpha3);
 
         builder.Property(x => x.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .UseSerialColumn();
 
         builder.Property(x => x.Alpha2)
             .HasColumnName("alpha2")

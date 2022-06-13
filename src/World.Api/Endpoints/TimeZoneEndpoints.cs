@@ -1,17 +1,23 @@
+using System.Globalization;
+using System.Web;
+using World.Api.Services.TimeZone;
+
 namespace World.Api.Endpoints;
 
 internal static class TimeZoneEndpoints
 {
     internal static IEndpointRouteBuilder MapTimeZoneEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapGet("/timezones", () =>
-        {
-            var timeZones = TimeZoneInfo.GetSystemTimeZones()
-                .Where(x => x.HasIanaId)
-                .OrderBy(x => x.BaseUtcOffset)
-                .Select(x => new { x.Id, Name = x.DisplayName, Offset = x.BaseUtcOffset });
+        routes.MapGet("/timezones", (TimeZoneService service, CancellationToken ct) =>
+            Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
+        );
 
-            return Results.Ok(timeZones);
+        routes.MapGet("/timezones/{id}", async (string id, TimeZoneService service, CancellationToken ct) =>
+        {
+            var result = await service
+                .GetAsync(HttpUtility.UrlDecode(id), CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct);
+
+            return result is null ? Results.NotFound() : Results.Ok(result);
         });
 
         return routes;

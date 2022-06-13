@@ -28,12 +28,12 @@ internal sealed class CountryTranslationEntityTypeConfiguration : IEntityTypeCon
 
         builder.Property(x => x.Common)
             .HasColumnName("common")
-            .HasMaxLength(256)
+            .HasMaxLength(128)
             .IsRequired();
 
         builder.Property(x => x.Official)
             .HasColumnName("official")
-            .HasMaxLength(512)
+            .HasMaxLength(256)
             .IsRequired();
 
         builder.HasOne<Country>()

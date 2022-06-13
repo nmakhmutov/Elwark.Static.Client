@@ -1,17 +1,28 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using World.Api.Models;
+using TimeZone = World.Api.Models.TimeZone;
 
 namespace World.Api.Infrastructure;
 
 internal sealed class WorldDbContextSeed
 {
+    private readonly IEnumerable<CultureInfo> _cultures;
     private readonly WorldDbContext _dbContext;
 
-    public WorldDbContextSeed(WorldDbContext dbContext) =>
+    public WorldDbContextSeed(WorldDbContext dbContext, IEnumerable<CultureInfo> cultures)
+    {
         _dbContext = dbContext;
+        _cultures = cultures;
+    }
 
     public async Task SeedAsync()
+    {
+        await SeedCountriesAsync();
+        await SeedTimeZonesAsync();
+    }
+
+    private async Task SeedCountriesAsync()
     {
         if (await _dbContext.Countries.AnyAsync())
             return;
@@ -34,7 +45,11 @@ internal sealed class WorldDbContextSeed
 
             foreach (var translation in item.Translations)
             {
-                var language = new CultureInfo(translation.Key).TwoLetterISOLanguageName;
+                var culture = new CultureInfo(translation.Key);
+                if (!_cultures.Contains(culture))
+                    continue;
+
+                var language = culture.TwoLetterISOLanguageName;
                 if (language.Length == 2)
                     country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
             }
@@ -42,6 +57,34 @@ internal sealed class WorldDbContextSeed
             await _dbContext.Countries.AddAsync(country);
         }
 
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task SeedTimeZonesAsync()
+    {
+        if (await _dbContext.TimeZones.AnyAsync())
+            return;
+
+        var result = new Dictionary<string, TimeZone>();
+        foreach (var culture in _cultures)
+        {
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+            TimeZoneInfo.ClearCachedData();
+
+            foreach (var timeZoneInfo in TimeZoneInfo.GetSystemTimeZones().Where(x => x.HasIanaId))
+            {
+                var language = culture.TwoLetterISOLanguageName;
+
+                if (!result.ContainsKey(timeZoneInfo.Id))
+                    result.Add(timeZoneInfo.Id, new TimeZone(timeZoneInfo.Id, timeZoneInfo.BaseUtcOffset));
+
+                result[timeZoneInfo.Id]
+                    .AddTranslation(language, timeZoneInfo.StandardName, timeZoneInfo.DisplayName);
+            }
+        }
+
+        await _dbContext.TimeZones.AddRangeAsync(result.Values);
         await _dbContext.SaveChangesAsync();
     }
 

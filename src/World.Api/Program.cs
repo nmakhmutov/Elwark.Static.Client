@@ -4,10 +4,12 @@ using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Serilog;
 using World.Api.Endpoints;
 using World.Api.Infrastructure;
 using World.Api.Services.Country;
+using World.Api.Services.TimeZone;
 
 const string appName = "Worlds.Api";
 const string mainCors = "MainCORS";
@@ -36,9 +38,8 @@ builder.Services
         {
             new("en"),
             new("ru"),
-            new("fr"),
-            new("de"),
-            new("it")
+            new("es"),
+            new("fr")
         };
 
         options.DefaultRequestCulture = new RequestCulture("en");
@@ -56,6 +57,7 @@ var postgresql = builder.Configuration["Postgresql:ConnectionString"]!;
 
 builder.Services
     .AddSingleton(_ => new CountryService(postgresql))
+    .AddSingleton(_ => new TimeZoneService(postgresql))
     .AddDbContext<WorldDbContext>(options => options.UseNpgsql(postgresql));
 
 builder.Host
@@ -71,7 +73,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<WorldDbContext>();
     await dbContext.Database.MigrateAsync();
 
-    await new WorldDbContextSeed(dbContext).SeedAsync();
+    var options = scope.ServiceProvider.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+    await new WorldDbContextSeed(dbContext, options.SupportedCultures!)
+        .SeedAsync();
 }
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions

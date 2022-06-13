@@ -7,15 +7,9 @@ internal static class CountryEndpoints
 {
     internal static IEndpointRouteBuilder MapCountryEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapGet("/countries", async (CountryService service, CancellationToken ct) =>
-        {
-            var countries = new List<CountryOverview>();
-
-            await foreach (var country in service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
-                countries.Add(country);
-
-            return Results.Ok(countries);
-        });
+        routes.MapGet("/countries", (CountryService service, CancellationToken ct) =>
+            Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
+        );
 
         routes.MapGet("/countries/{code}", async (string code, CountryService services, CancellationToken ct) =>
         {

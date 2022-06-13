@@ -29,7 +29,7 @@ namespace World.Api.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Alpha2")
                         .IsRequired()
@@ -68,8 +68,8 @@ namespace World.Api.Infrastructure.Migrations
 
                     b.Property<string>("Common")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("common");
 
                     b.Property<int>("CountryId")
@@ -84,8 +84,8 @@ namespace World.Api.Infrastructure.Migrations
 
                     b.Property<string>("Official")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("official");
 
                     b.HasKey("Id");
@@ -93,6 +93,69 @@ namespace World.Api.Infrastructure.Migrations
                     b.HasAlternateKey("CountryId", "Language");
 
                     b.ToTable("country_translations", (string)null);
+                });
+
+            modelBuilder.Entity("World.Api.Models.TimeZone", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("name");
+
+                    b.Property<TimeSpan>("UtcOffset")
+                        .HasColumnType("interval")
+                        .HasColumnName("utc_offset");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
+
+                    b.ToTable("time_zones", (string)null);
+                });
+
+            modelBuilder.Entity("World.Api.Models.TimeZoneTranslation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("language");
+
+                    b.Property<string>("StandardName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("standard_name");
+
+                    b.Property<int>("TimeZoneId")
+                        .HasColumnType("integer")
+                        .HasColumnName("time_zone_id");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("TimeZoneId", "Language");
+
+                    b.ToTable("time_zone_translations", (string)null);
                 });
 
             modelBuilder.Entity("World.Api.Models.CountryTranslation", b =>
@@ -104,7 +167,21 @@ namespace World.Api.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("World.Api.Models.TimeZoneTranslation", b =>
+                {
+                    b.HasOne("World.Api.Models.TimeZone", null)
+                        .WithMany("Translations")
+                        .HasForeignKey("TimeZoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("World.Api.Models.Country", b =>
+                {
+                    b.Navigation("Translations");
+                });
+
+            modelBuilder.Entity("World.Api.Models.TimeZone", b =>
                 {
                     b.Navigation("Translations");
                 });

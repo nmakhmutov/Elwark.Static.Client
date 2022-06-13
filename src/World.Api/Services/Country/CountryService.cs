@@ -16,17 +16,16 @@ internal sealed class CountryService
     {
         var sql = language == "en"
             ? @"
-SELECT c.alpha2, ctr.common, c.flag
+SELECT c.alpha2, ctr.common
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = 'en'
-ORDER BY ctr.common;"
+ORDER BY ctr.common"
             : @"
-SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name, c.flag
+SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name
 FROM countries c
          LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
          LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'en'
-ORDER BY name;
-";
+ORDER BY name";
 
         await using var connection = new NpgsqlConnection(_connection);
         await using var command = new NpgsqlCommand(sql, connection)
@@ -40,7 +39,7 @@ ORDER BY name;
         while (await reader.ReadAsync(ct))
         {
             ct.ThrowIfCancellationRequested();
-            yield return new CountryOverview(reader.GetString(0), reader.GetString(1), reader.GetString(2));
+            yield return new CountryOverview(reader.GetString(0), reader.GetString(1));
         }
     }
 

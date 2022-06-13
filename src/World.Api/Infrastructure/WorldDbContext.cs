@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using World.Api.Infrastructure.EntityConfigurations;
 using World.Api.Models;
+using TimeZone = World.Api.Models.TimeZone;
 
 namespace World.Api.Infrastructure;
 
@@ -16,10 +17,17 @@ public sealed class WorldDbContext : DbContext
 
     public DbSet<CountryTranslation> CountryTranslations { get; set; } = default!;
 
+    public DbSet<TimeZone> TimeZones { get; set; } = default!;
+
+    public DbSet<TimeZoneTranslation> TimeZoneTranslations { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CountryEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CountryTranslationEntityTypeConfiguration());
+
+        modelBuilder.ApplyConfiguration(new TimeZoneEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new TimeZoneTranslationEntityTypeConfiguration());
     }
 }
 
