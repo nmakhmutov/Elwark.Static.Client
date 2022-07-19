@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using World.Api.Models;
 using TimeZone = World.Api.Models.TimeZone;
@@ -28,9 +30,16 @@ internal sealed class WorldDbContextSeed
             return;
 
         var client = new HttpClient();
-        var countries = await client.GetFromJsonAsync<CountryDto[]>(
-            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations"
-        );
+        var options = new JsonSerializerOptions
+        {
+            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+        };
+
+        const string url =
+            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations,region,subregion,startOfWeek";
+        var countries = await client.GetFromJsonAsync<CountryDto[]>(url, options);
 
         if (countries is null)
             return;
@@ -40,18 +49,27 @@ internal sealed class WorldDbContextSeed
             if (string.IsNullOrEmpty(item.Ccn3) || string.IsNullOrEmpty(item.Cca2) || string.IsNullOrEmpty(item.Cca3))
                 continue;
 
-            var country = new Country(int.Parse(item.Ccn3), item.Cca2, item.Cca3, item.Flags["svg"]);
+            var country = new Country(
+                int.Parse(item.Ccn3),
+                item.Cca2,
+                item.Cca3,
+                item.Flags["svg"],
+                item.Region,
+                string.IsNullOrWhiteSpace(item.Subregion) ? null : item.Subregion,
+                Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result) ? result : DayOfWeek.Monday
+            );
+
             country.AddTranslation("en", item.Name.Common, item.Name.Official);
 
             foreach (var translation in item.Translations)
             {
                 var culture = new CultureInfo(translation.Key);
-                if (!_cultures.Contains(culture))
+                var language = culture.TwoLetterISOLanguageName;
+
+                if (!_cultures.Contains(culture) || language.Length != 2)
                     continue;
 
-                var language = culture.TwoLetterISOLanguageName;
-                if (language.Length == 2)
-                    country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
+                country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
             }
 
             await _dbContext.Countries.AddAsync(country);
@@ -92,6 +110,9 @@ internal sealed class WorldDbContextSeed
         string Ccn3,
         string Cca2,
         string Cca3,
+        string Region,
+        string? Subregion,
+        string? StartOfWeek,
         NameDto Name,
         Dictionary<string, NameDto> Translations,
         Dictionary<string, Uri> Flags

@@ -8,16 +8,21 @@ public sealed class Country
     private Country(Uri flag)
     {
         Flag = flag;
-        Alpha2 = Alpha3 = string.Empty;
+        StartOfWeek = DayOfWeek.Monday;
+        Alpha2 = Alpha3 = Region = Subregion = string.Empty;
         Translations = new HashSet<CountryTranslation>();
     }
 
-    public Country(int id, string alpha2, string alpha3, Uri flag)
+    public Country(int id, string alpha2, string alpha3, Uri flag, string region, string? subregion,
+        DayOfWeek startOfWeek)
     {
         Id = id;
         Alpha2 = alpha2.ToUpperInvariant();
         Alpha3 = alpha3.ToUpperInvariant();
         Flag = flag;
+        Region = region;
+        Subregion = subregion;
+        StartOfWeek = startOfWeek;
         Translations = new HashSet<CountryTranslation>();
     }
 
@@ -26,6 +31,12 @@ public sealed class Country
     public string Alpha2 { get; private set; }
 
     public string Alpha3 { get; private set; }
+
+    public string Region { get; private set; }
+
+    public string? Subregion { get; private set; }
+
+    public DayOfWeek StartOfWeek { get; private set; }
 
     public Uri Flag { get; private set; }
 

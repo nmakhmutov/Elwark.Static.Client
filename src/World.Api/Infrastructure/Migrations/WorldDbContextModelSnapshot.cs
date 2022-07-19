@@ -17,7 +17,7 @@ namespace World.Api.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-preview.4.22229.2")
+                .HasAnnotation("ProductVersion", "7.0.0-preview.5.22302.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -49,11 +49,28 @@ namespace World.Api.Infrastructure.Migrations
                         .HasColumnType("character varying(1024)")
                         .HasColumnName("flag");
 
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("region");
+
+                    b.Property<int>("StartOfWeek")
+                        .HasColumnType("integer")
+                        .HasColumnName("start_of_week");
+
+                    b.Property<string>("Subregion")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("subregion");
+
                     b.HasKey("Id");
 
                     b.HasAlternateKey("Alpha2");
 
                     b.HasAlternateKey("Alpha3");
+
+                    b.HasIndex("Region");
 
                     b.ToTable("countries", (string)null);
                 });

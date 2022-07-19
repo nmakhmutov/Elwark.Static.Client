@@ -13,6 +13,7 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.HasKey(x => x.Id);
         builder.HasAlternateKey(x => x.Alpha2);
         builder.HasAlternateKey(x => x.Alpha3);
+        builder.HasIndex(x => x.Region);
 
         builder.Property(x => x.Id)
             .HasColumnName("id")
@@ -31,6 +32,19 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.Property(x => x.Flag)
             .HasColumnName("flag")
             .HasMaxLength(1024)
+            .IsRequired();
+
+        builder.Property(x => x.Region)
+            .HasColumnName("region")
+            .HasMaxLength(32)
+            .IsRequired();
+
+        builder.Property(x => x.Subregion)
+            .HasColumnName("subregion")
+            .HasMaxLength(64);
+
+        builder.Property(x => x.StartOfWeek)
+            .HasColumnName("start_of_week")
             .IsRequired();
 
         builder.HasMany(x => x.Translations)

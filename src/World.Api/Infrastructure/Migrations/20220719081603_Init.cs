@@ -20,6 +20,9 @@ namespace World.Api.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     alpha2 = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     alpha3 = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    region = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    subregion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    start_of_week = table.Column<int>(type: "integer", nullable: false),
                     flag = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
@@ -87,6 +90,11 @@ namespace World.Api.Infrastructure.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_countries_region",
+                table: "countries",
+                column: "region");
         }
 
         /// <inheritdoc />
