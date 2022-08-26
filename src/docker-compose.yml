@@ -6,11 +6,15 @@ networks:
 
 services:
   world.api:
-    container_name: "world_api"
     image: "elwark/world/api:${TAG:-latest}"
+    container_name: "world_api"
     build:
       context: .
       dockerfile: World.Api/Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - Serilog__WriteTo__0__Name=Console

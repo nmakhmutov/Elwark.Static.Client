@@ -9,8 +9,12 @@ internal static class TimeZoneEndpoints
     internal static IEndpointRouteBuilder MapTimeZoneEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapGet("/timezones", (TimeZoneService service, CancellationToken ct) =>
-            Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
-        );
+                Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
+            )
+            .CacheOutput(policy => policy
+                .Expire(TimeSpan.FromDays(1))
+                .VaryByValue(_ => CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+            );
 
         routes.MapGet("/timezones/{id}", async (string id, TimeZoneService service, CancellationToken ct) =>
         {

@@ -8,8 +8,12 @@ internal static class CountryEndpoints
     internal static IEndpointRouteBuilder MapCountryEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapGet("/countries", (CountryService service, CancellationToken ct) =>
-            Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
-        );
+                Results.Ok(service.GetAsync(CultureInfo.CurrentCulture.TwoLetterISOLanguageName, ct))
+            )
+            .CacheOutput(policy => policy
+                .Expire(TimeSpan.FromDays(1))
+                .VaryByValue(_ => CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+            );
 
         routes.MapGet("/countries/{code}", async (string code, CountryService services, CancellationToken ct) =>
         {

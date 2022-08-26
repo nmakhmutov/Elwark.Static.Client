@@ -12,7 +12,6 @@ using World.Api.Services.Country;
 using World.Api.Services.TimeZone;
 
 const string appName = "Worlds.Api";
-const string mainCors = "MainCORS";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
@@ -24,14 +23,8 @@ builder.Services
     .WithTraceIdentifierProvider();
 
 builder.Services
-    .AddCors(options =>
-        options.AddPolicy(mainCors, policyBuilder => policyBuilder
-            .WithOrigins(builder.Configuration.GetRequiredSection("Cors").Get<string[]>()!)
-            .WithMethods(HttpMethods.Get)
-            .AllowAnyHeader()
-        ));
-
-builder.Services
+    .AddCors()
+    .AddOutputCache(options => options.DefaultExpirationTimeSpan = TimeSpan.FromMinutes(1))
     .AddRequestLocalization(options =>
     {
         var cultures = new List<CultureInfo>
@@ -83,9 +76,13 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
         ForwardLimit = 10
     })
-    .UseCors(mainCors)
+    .UseCors(policyBuilder => policyBuilder
+        .WithOrigins(builder.Configuration.GetRequiredSection("Cors").Get<string[]>()!)
+        .WithMethods(HttpMethods.Get)
+        .AllowAnyHeader())
     .UseCorrelationId()
-    .UseRequestLocalization();
+    .UseRequestLocalization()
+    .UseOutputCache();
 
 app.MapCountryEndpoints()
     .MapTimeZoneEndpoints();
