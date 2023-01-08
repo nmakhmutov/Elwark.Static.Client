@@ -12,7 +12,7 @@ internal static class CountryEndpoints
             )
             .CacheOutput(policy => policy
                 .Expire(TimeSpan.FromDays(1))
-                .VaryByValue(_ => CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+                .VaryByValue($"{nameof(CountryEndpoints)}-root", CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
             );
 
         routes.MapGet("/countries/{code}", async (string code, CountryService services, CancellationToken ct) =>

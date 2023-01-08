@@ -13,7 +13,7 @@ internal static class TimeZoneEndpoints
             )
             .CacheOutput(policy => policy
                 .Expire(TimeSpan.FromDays(1))
-                .VaryByValue(_ => CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+                .VaryByValue($"{nameof(TimeZoneEndpoints)}-root", CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
             );
 
         routes.MapGet("/timezones/{id}", async (string id, TimeZoneService service, CancellationToken ct) =>
