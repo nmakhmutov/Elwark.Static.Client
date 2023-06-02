@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 networks:
   elwarknetwork:
@@ -10,7 +10,7 @@ services:
     container_name: "world_api"
     build:
       context: .
-      dockerfile: World.Api/Dockerfile
+      dockerfile: src/World.Api/Dockerfile
     deploy:
       resources:
         limits:

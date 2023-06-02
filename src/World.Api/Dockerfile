@@ -1,10 +1,10 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY . ./
-WORKDIR World.Api
+FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+WORKDIR /
+COPY "src/World.Api" "src/World.Api/"
+WORKDIR src/World.Api
 RUN dotnet publish World.Api.csproj -c Release -o /app
 
 FROM build AS publish

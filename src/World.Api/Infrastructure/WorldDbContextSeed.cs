@@ -66,10 +66,8 @@ internal sealed class WorldDbContextSeed
                 var culture = new CultureInfo(translation.Key);
                 var language = culture.TwoLetterISOLanguageName;
 
-                if (!_cultures.Contains(culture) || language.Length != 2)
-                    continue;
-
-                country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
+                if (_cultures.Contains(culture))
+                    country.AddTranslation(language, translation.Value.Common, translation.Value.Official);
             }
 
             await _dbContext.Countries.AddAsync(country);
