@@ -17,7 +17,7 @@ namespace World.Api.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0-preview.5.22302.2")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -43,11 +43,21 @@ namespace World.Api.Infrastructure.Migrations
                         .HasColumnType("character varying(3)")
                         .HasColumnName("alpha3");
 
+                    b.Property<string[]>("Currencies")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("currencies");
+
                     b.Property<string>("Flag")
                         .IsRequired()
                         .HasMaxLength(1024)
                         .HasColumnType("character varying(1024)")
                         .HasColumnName("flag");
+
+                    b.Property<string[]>("Languages")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("languages");
 
                     b.Property<string>("Region")
                         .IsRequired()

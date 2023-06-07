@@ -11,7 +11,7 @@ public sealed class CountryTranslation
     {
         Id = Guid.Empty;
         CountryId = countryId;
-        Language = language;
+        Language = language.ToUpperInvariant();
         Official = official;
         Common = common;
     }
@@ -25,4 +25,7 @@ public sealed class CountryTranslation
     public string Common { get; private set; }
 
     public string Official { get; private set; }
+
+    public override string ToString() =>
+        $"({Language}) {Common}";
 }

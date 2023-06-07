@@ -6,5 +6,7 @@ internal sealed record CountryDetails(
     string Alpha3,
     string Common,
     string Official,
-    string Flag
+    string Flag,
+    string[] Languages,
+    string[] Currencies
 );

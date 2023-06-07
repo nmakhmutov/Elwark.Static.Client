@@ -47,6 +47,14 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasColumnName("start_of_week")
             .IsRequired();
 
+        builder.Property(x => x.Languages)
+            .HasColumnName("languages")
+            .IsRequired();
+
+        builder.Property(x => x.Currencies)
+            .HasColumnName("currencies")
+            .IsRequired();
+
         builder.HasMany(x => x.Translations)
             .WithOne()
             .HasForeignKey(x => x.CountryId)

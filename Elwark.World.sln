@@ -2,9 +2,6 @@
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FEA0C318-FFED-4D39-8781-265718CA43DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FC87501A-274A-48C9-BCDB-09273D61ACB1}"
-	ProjectSection(SolutionItems) = preProject
-		src\docker-compose.yml = src\docker-compose.yml
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "World.Api", "src\World.Api\World.Api.csproj", "{2C95E19B-56CF-470B-ABBB-15E5213F26D5}"
 EndProject

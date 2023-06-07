@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Npgsql;
@@ -11,21 +12,24 @@ internal sealed class CountryService
     public CountryService(string connection) =>
         _connection = connection;
 
-    public async IAsyncEnumerable<CountryOverview> GetAsync(string language,
-        [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<CountryOverview> GetAsync(CultureInfo culture, [EnumeratorCancellation] CancellationToken ct = default)
     {
-        var sql = language == "en"
-            ? @"
-SELECT c.alpha2, ctr.common
-FROM countries c
-         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = 'en'
-ORDER BY ctr.common"
-            : @"
-SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name
-FROM countries c
-         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
-         LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'en'
-ORDER BY name";
+        var language = culture.TwoLetterISOLanguageName.ToUpperInvariant();
+        
+        var sql = language == "EN"
+            ? """
+                SELECT c.alpha2, ctr.common
+                FROM countries c
+                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = 'en'
+                ORDER BY ctr.common
+                """
+            : """
+                SELECT c.alpha2, COALESCE(ctr.common, ctd.common) AS name
+                FROM countries c
+                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
+                         LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'EN'
+                ORDER BY name
+                """;
 
         await using var connection = new NpgsqlConnection(_connection);
         await using var command = new NpgsqlCommand(sql, connection)
@@ -43,33 +47,39 @@ ORDER BY name";
         }
     }
 
-    public async Task<CountryDetails?> GetAsync(string code, string language, CancellationToken ct = default)
+    public async Task<CountryDetails?> GetAsync(string code, CultureInfo culture, CancellationToken ct = default)
     {
         if (code.Length is < 2 or > 3)
             return null;
 
-        var sb = new StringBuilder(language == "en"
-            ? @"
-SELECT c.id,
-       c.alpha2,
-       c.alpha3,
-       ctr.common,
-       ctr.official,
-       flag
-FROM countries c
-         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
-"
-            : @"
-SELECT c.id,
-       c.alpha2,
-       c.alpha3,
-       COALESCE(ctr.common, ctd.common)     AS common,
-       COALESCE(ctr.official, ctd.official) AS official,
-       flag
-FROM countries c
-         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
-         LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'en'
-");
+        var language = culture.TwoLetterISOLanguageName.ToUpperInvariant();
+        
+        var sb = new StringBuilder(language == "EN"
+            ? """
+                SELECT c.id,
+                       c.alpha2,
+                       c.alpha3,
+                       ctr.common,
+                       ctr.official,
+                       c.flag,
+                       c.languages,
+                       c.currencies
+                FROM countries c
+                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
+                """
+            : """
+                SELECT c.id,
+                       c.alpha2,
+                       c.alpha3,
+                       COALESCE(ctr.common, ctd.common)     AS common,
+                       COALESCE(ctr.official, ctd.official) AS official,
+                       c.flag,
+                       c.languages,
+                       c.currencies
+                FROM countries c
+                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
+                         LEFT JOIN country_translations ctd ON c.id = ctd.country_id AND ctd.language = 'EN'
+                """);
 
         sb.Append(code.Length == 2 ? " WHERE c.alpha2 = $2 LIMIT 1;" : " WHERE c.alpha3 = $2 LIMIT 1;");
 
@@ -88,12 +98,14 @@ FROM countries c
         await using var reader = await command.ExecuteReaderAsync(ct);
         if (await reader.ReadAsync(ct))
             return new CountryDetails(
-                reader.GetInt32(0).ToString().PadLeft(3, '0'),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetString(3),
-                reader.GetString(4),
-                reader.GetString(5)
+                reader.GetFieldValue<int>(0).ToString().PadLeft(3, '0'),
+                reader.GetFieldValue<string>(1),
+                reader.GetFieldValue<string>(2),
+                reader.GetFieldValue<string>(3),
+                reader.GetFieldValue<string>(4),
+                reader.GetFieldValue<string>(5),
+                reader.GetFieldValue<string[]>(6),
+                reader.GetFieldValue<string[]>(7)
             );
 
         return null;

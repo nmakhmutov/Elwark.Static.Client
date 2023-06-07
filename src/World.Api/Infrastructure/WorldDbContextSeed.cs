@@ -38,7 +38,8 @@ internal sealed class WorldDbContextSeed
         };
 
         const string url =
-            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations,region,subregion,startOfWeek";
+            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations,region,subregion,startOfWeek,languages,currencies";
+
         var countries = await client.GetFromJsonAsync<CountryDto[]>(url, options);
 
         if (countries is null)
@@ -58,6 +59,12 @@ internal sealed class WorldDbContextSeed
                 string.IsNullOrWhiteSpace(item.Subregion) ? null : item.Subregion,
                 Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result) ? result : DayOfWeek.Monday
             );
+
+            foreach (var (language, _) in item.Languages)
+                country.AddLanguage(new CultureInfo(language).TwoLetterISOLanguageName);
+
+            foreach (var (currency, _) in item.Currencies)
+                country.AddCurrency(currency);
 
             country.AddTranslation("en", item.Name.Common, item.Name.Official);
 
@@ -113,7 +120,9 @@ internal sealed class WorldDbContextSeed
         string? StartOfWeek,
         NameDto Name,
         Dictionary<string, NameDto> Translations,
-        Dictionary<string, Uri> Flags
+        Dictionary<string, Uri> Flags,
+        Dictionary<string, string> Languages,
+        Dictionary<string, JsonElement> Currencies
     );
 
     private sealed record NameDto(string Common, string Official);

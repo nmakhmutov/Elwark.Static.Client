@@ -32,7 +32,8 @@ builder.Services
             new("en"),
             new("ru"),
             new("es"),
-            new("fr")
+            new("fr"),
+            new("de")
         };
 
         options.DefaultRequestCulture = new RequestCulture("en");

@@ -23,7 +23,9 @@ namespace World.Api.Infrastructure.Migrations
                     region = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     subregion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     start_of_week = table.Column<int>(type: "integer", nullable: false),
-                    flag = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
+                    flag = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    languages = table.Column<string[]>(type: "text[]", nullable: false),
+                    currencies = table.Column<string[]>(type: "text[]", nullable: false)
                 },
                 constraints: table =>
                 {
