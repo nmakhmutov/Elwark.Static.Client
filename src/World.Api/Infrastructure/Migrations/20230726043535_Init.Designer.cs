@@ -12,7 +12,7 @@ using World.Api.Infrastructure;
 namespace World.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(WorldDbContext))]
-    [Migration("20230606171236_Init")]
+    [Migration("20230726043535_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -45,6 +45,12 @@ namespace World.Api.Infrastructure.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("alpha3");
+
+                    b.Property<string>("Continent")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("continent");
 
                     b.Property<string[]>("Currencies")
                         .IsRequired()

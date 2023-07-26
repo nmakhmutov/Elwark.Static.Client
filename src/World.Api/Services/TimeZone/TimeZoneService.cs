@@ -28,13 +28,9 @@ internal sealed class TimeZoneService
                 ORDER BY tz.id
                 """;
 
-        await using var connection = new NpgsqlConnection(_connection);
-        await using var command = new NpgsqlCommand(sql, connection)
-        {
-            Parameters = { new NpgsqlParameter { Value = language } }
-        };
-
-        await connection.OpenAsync(ct);
+        await using var source = NpgsqlDataSource.Create(_connection);
+        await using var command = source.CreateCommand(sql);
+        command.Parameters.AddWithValue(language);
 
         await using var reader = await command.ExecuteReaderAsync(ct);
         while (await reader.ReadAsync(ct))
@@ -69,17 +65,10 @@ internal sealed class TimeZoneService
                 LIMIT 1
                 """;
 
-        await using var connection = new NpgsqlConnection(_connection);
-        await using var command = new NpgsqlCommand(sql, connection)
-        {
-            Parameters =
-            {
-                new NpgsqlParameter { Value = language },
-                new NpgsqlParameter { Value = id }
-            }
-        };
-
-        await connection.OpenAsync(ct);
+        await using var source = NpgsqlDataSource.Create(_connection);
+        await using var command = source.CreateCommand(sql);
+        command.Parameters.AddWithValue(language);
+        command.Parameters.AddWithValue(id);
 
         await using var reader = await command.ExecuteReaderAsync(ct);
         if (await reader.ReadAsync(ct))

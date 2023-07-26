@@ -34,6 +34,11 @@ internal sealed class CountryEntityTypeConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(1024)
             .IsRequired();
 
+        builder.Property(x => x.Continent)
+            .HasColumnName("continent")
+            .HasMaxLength(2)
+            .IsRequired();
+
         builder.Property(x => x.Region)
             .HasColumnName("region")
             .HasMaxLength(32)

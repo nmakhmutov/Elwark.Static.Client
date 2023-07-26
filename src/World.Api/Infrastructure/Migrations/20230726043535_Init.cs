@@ -20,6 +20,7 @@ namespace World.Api.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     alpha2 = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     alpha3 = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    continent = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     region = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
                     subregion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     start_of_week = table.Column<int>(type: "integer", nullable: false),

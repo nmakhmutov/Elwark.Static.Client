@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ internal sealed class WorldDbContextSeed
         if (await _dbContext.Countries.AnyAsync())
             return;
 
-        var client = new HttpClient();
+        var client = new HttpClient(new SocketsHttpHandler());
         var options = new JsonSerializerOptions
         {
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
@@ -37,27 +38,57 @@ internal sealed class WorldDbContextSeed
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
         };
 
-        const string url =
-            "https://restcountries.com/v3.1/all?fields=name,cca2,cca3,ccn3,flags,translations,region,subregion,startOfWeek,languages,currencies";
+        var url = new StringBuilder("https://restcountries.com/v3.1/all?fields=")
+            .Append("name,")
+            .Append("cca2,")
+            .Append("cca3,")
+            .Append("ccn3,")
+            .Append("flags,")
+            .Append("translations,")
+            .Append("region,")
+            .Append("subregion,")
+            .Append("startOfWeek,")
+            .Append("languages,")
+            .Append("currencies,")
+            .Append("continents")
+            .ToString();
 
         var countries = await client.GetFromJsonAsync<CountryDto[]>(url, options);
 
         if (countries is null)
             return;
 
+        var continents = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Africa"] = "AF",
+            ["North America"] = "NA",
+            ["Oceania"] = "OC",
+            ["Antarctica"] = "AN",
+            ["Asia"] = "AS",
+            ["Europe"] = "EU",
+            ["South America"] = "SA"
+        };
+
         foreach (var item in countries.OrderBy(x => x.Ccn3))
         {
             if (string.IsNullOrEmpty(item.Ccn3) || string.IsNullOrEmpty(item.Cca2) || string.IsNullOrEmpty(item.Cca3))
                 continue;
 
-            var country = new Country(
+            var continent = continents[item.Continents.First().Trim()];
+            var subregion = string.IsNullOrWhiteSpace(item.Subregion) ? null : item.Subregion;
+            var startOfWeek = Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result)
+                ? result
+                : DayOfWeek.Monday;
+            
+            var country = Country.Create(
                 int.Parse(item.Ccn3),
                 item.Cca2,
                 item.Cca3,
                 item.Flags["svg"],
+                continent,
                 item.Region,
-                string.IsNullOrWhiteSpace(item.Subregion) ? null : item.Subregion,
-                Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result) ? result : DayOfWeek.Monday
+                subregion,
+                startOfWeek
             );
 
             foreach (var (language, _) in item.Languages)
@@ -119,6 +150,7 @@ internal sealed class WorldDbContextSeed
         string? Subregion,
         string? StartOfWeek,
         NameDto Name,
+        string[] Continents,
         Dictionary<string, NameDto> Translations,
         Dictionary<string, Uri> Flags,
         Dictionary<string, string> Languages,

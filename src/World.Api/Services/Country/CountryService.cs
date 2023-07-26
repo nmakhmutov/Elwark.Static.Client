@@ -12,15 +12,16 @@ internal sealed class CountryService
     public CountryService(string connection) =>
         _connection = connection;
 
-    public async IAsyncEnumerable<CountryOverview> GetAsync(CultureInfo culture, [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<CountryOverview> GetAsync(CultureInfo culture,
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
         var language = culture.TwoLetterISOLanguageName.ToUpperInvariant();
-        
+
         var sql = language == "EN"
             ? """
                 SELECT c.alpha2, ctr.common
                 FROM countries c
-                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = 'en'
+                         LEFT JOIN country_translations ctr ON c.id = ctr.country_id AND ctr.language = $1
                 ORDER BY ctr.common
                 """
             : """
@@ -31,13 +32,9 @@ internal sealed class CountryService
                 ORDER BY name
                 """;
 
-        await using var connection = new NpgsqlConnection(_connection);
-        await using var command = new NpgsqlCommand(sql, connection)
-        {
-            Parameters = { new NpgsqlParameter { Value = language } }
-        };
-
-        await connection.OpenAsync(ct);
+        await using var source = NpgsqlDataSource.Create(_connection);
+        await using var command = source.CreateCommand(sql);
+        command.Parameters.AddWithValue(language);
 
         await using var reader = await command.ExecuteReaderAsync(ct);
         while (await reader.ReadAsync(ct))
@@ -53,12 +50,14 @@ internal sealed class CountryService
             return null;
 
         var language = culture.TwoLetterISOLanguageName.ToUpperInvariant();
-        
+
         var sb = new StringBuilder(language == "EN"
             ? """
                 SELECT c.id,
                        c.alpha2,
                        c.alpha3,
+                       c.continent,
+                       c.region,
                        ctr.common,
                        ctr.official,
                        c.flag,
@@ -71,6 +70,8 @@ internal sealed class CountryService
                 SELECT c.id,
                        c.alpha2,
                        c.alpha3,
+                       c.continent,
+                       c.region,
                        COALESCE(ctr.common, ctd.common)     AS common,
                        COALESCE(ctr.official, ctd.official) AS official,
                        c.flag,
@@ -83,17 +84,10 @@ internal sealed class CountryService
 
         sb.Append(code.Length == 2 ? " WHERE c.alpha2 = $2 LIMIT 1;" : " WHERE c.alpha3 = $2 LIMIT 1;");
 
-        await using var connection = new NpgsqlConnection(_connection);
-        await using var command = new NpgsqlCommand(sb.ToString(), connection)
-        {
-            Parameters =
-            {
-                new NpgsqlParameter { Value = language },
-                new NpgsqlParameter { Value = code }
-            }
-        };
-
-        await connection.OpenAsync(ct);
+        await using var source = NpgsqlDataSource.Create(_connection);
+        await using var command = source.CreateCommand(sb.ToString());
+        command.Parameters.AddWithValue(language);
+        command.Parameters.AddWithValue(code);
 
         await using var reader = await command.ExecuteReaderAsync(ct);
         if (await reader.ReadAsync(ct))
@@ -104,8 +98,10 @@ internal sealed class CountryService
                 reader.GetFieldValue<string>(3),
                 reader.GetFieldValue<string>(4),
                 reader.GetFieldValue<string>(5),
-                reader.GetFieldValue<string[]>(6),
-                reader.GetFieldValue<string[]>(7)
+                reader.GetFieldValue<string>(6),
+                reader.GetFieldValue<string>(7),
+                reader.GetFieldValue<string[]>(8),
+                reader.GetFieldValue<string[]>(9)
             );
 
         return null;

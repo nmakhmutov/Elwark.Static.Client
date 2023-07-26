@@ -4,6 +4,8 @@ internal sealed record CountryDetails(
     string Numeric,
     string Alpha2,
     string Alpha3,
+    string Continent,
+    string Region,
     string Common,
     string Official,
     string Flag,
