@@ -17,7 +17,7 @@ namespace World.Api.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -85,8 +85,6 @@ namespace World.Api.Infrastructure.Migrations
                     b.HasAlternateKey("Alpha2");
 
                     b.HasAlternateKey("Alpha3");
-
-                    b.HasIndex("Region");
 
                     b.ToTable("countries", (string)null);
                 });

@@ -1,6 +1,4 @@
 using System.Globalization;
-using CorrelationId;
-using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +13,7 @@ const string appName = "Worlds.Api";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddCorrelationId(options =>
-    {
-        options.UpdateTraceIdentifier = true;
-        options.AddToLoggingScope = true;
-    })
+    .AddCorrelationId(options => options.UpdateTraceIdentifier = true)
     .WithTraceIdentifierProvider();
 
 builder.Services

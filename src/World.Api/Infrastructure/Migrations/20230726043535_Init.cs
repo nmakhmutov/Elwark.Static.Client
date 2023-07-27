@@ -93,11 +93,6 @@ namespace World.Api.Infrastructure.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_countries_region",
-                table: "countries",
-                column: "region");
         }
 
         /// <inheritdoc />
