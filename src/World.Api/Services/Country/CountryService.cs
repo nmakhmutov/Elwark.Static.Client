@@ -56,7 +56,6 @@ internal sealed class CountryService
                 SELECT c.id,
                        c.alpha2,
                        c.alpha3,
-                       c.continent,
                        c.region,
                        ctr.common,
                        ctr.official,
@@ -70,7 +69,6 @@ internal sealed class CountryService
                 SELECT c.id,
                        c.alpha2,
                        c.alpha3,
-                       c.continent,
                        c.region,
                        COALESCE(ctr.common, ctd.common)     AS common,
                        COALESCE(ctr.official, ctd.official) AS official,
@@ -99,9 +97,8 @@ internal sealed class CountryService
                 reader.GetFieldValue<string>(4),
                 reader.GetFieldValue<string>(5),
                 reader.GetFieldValue<string>(6),
-                reader.GetFieldValue<string>(7),
-                reader.GetFieldValue<string[]>(8),
-                reader.GetFieldValue<string[]>(9)
+                reader.GetFieldValue<string[]>(7),
+                reader.GetFieldValue<string[]>(8)
             );
 
         return null;

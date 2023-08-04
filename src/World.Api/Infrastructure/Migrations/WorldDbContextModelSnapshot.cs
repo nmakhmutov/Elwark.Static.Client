@@ -43,12 +43,6 @@ namespace World.Api.Infrastructure.Migrations
                         .HasColumnType("character varying(3)")
                         .HasColumnName("alpha3");
 
-                    b.Property<string>("Continent")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)")
-                        .HasColumnName("continent");
-
                     b.Property<string[]>("Currencies")
                         .IsRequired()
                         .HasColumnType("text[]")

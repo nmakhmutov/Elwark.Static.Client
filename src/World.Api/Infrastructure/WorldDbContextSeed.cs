@@ -39,7 +39,6 @@ internal sealed class WorldDbContextSeed
         };
 
         var url = new StringBuilder("https://restcountries.com/v3.1/all?fields=")
-            .Append("name,")
             .Append("cca2,")
             .Append("cca3,")
             .Append("ccn3,")
@@ -50,7 +49,7 @@ internal sealed class WorldDbContextSeed
             .Append("startOfWeek,")
             .Append("languages,")
             .Append("currencies,")
-            .Append("continents")
+            .Append("name")
             .ToString();
 
         var countries = await client.GetFromJsonAsync<CountryDto[]>(url, options);
@@ -63,7 +62,7 @@ internal sealed class WorldDbContextSeed
             ["Africa"] = "AF",
             ["North America"] = "NA",
             ["Oceania"] = "OC",
-            ["Antarctica"] = "AN",
+            ["Antarctic"] = "AN",
             ["Asia"] = "AS",
             ["Europe"] = "EU",
             ["South America"] = "SA"
@@ -74,8 +73,8 @@ internal sealed class WorldDbContextSeed
             if (string.IsNullOrEmpty(item.Ccn3) || string.IsNullOrEmpty(item.Cca2) || string.IsNullOrEmpty(item.Cca3))
                 continue;
 
-            var continent = continents[item.Continents.First().Trim()];
             var subregion = string.IsNullOrWhiteSpace(item.Subregion) ? null : item.Subregion;
+            var region = continents[GetRegion(item.Region, subregion)];
             var startOfWeek = Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result)
                 ? result
                 : DayOfWeek.Monday;
@@ -85,8 +84,7 @@ internal sealed class WorldDbContextSeed
                 item.Cca2,
                 item.Cca3,
                 item.Flags["svg"],
-                continent,
-                item.Region,
+                region,
                 subregion,
                 startOfWeek
             );
@@ -112,6 +110,20 @@ internal sealed class WorldDbContextSeed
         }
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    private static string GetRegion(string region, string? subregion)
+    {
+        if (string.IsNullOrEmpty(subregion))
+            return region;
+        
+        if (region != "Americas")
+            return region;
+
+        if (subregion is "Caribbean" or "Central America")
+            return "North America";
+
+        return subregion;
     }
 
     private async Task SeedTimeZonesAsync()
@@ -150,7 +162,6 @@ internal sealed class WorldDbContextSeed
         string? Subregion,
         string? StartOfWeek,
         NameDto Name,
-        string[] Continents,
         Dictionary<string, NameDto> Translations,
         Dictionary<string, Uri> Flags,
         Dictionary<string, string> Languages,
