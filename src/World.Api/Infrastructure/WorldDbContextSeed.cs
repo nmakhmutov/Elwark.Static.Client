@@ -35,7 +35,7 @@ internal sealed class WorldDbContextSeed
         {
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
 
         var url = new StringBuilder("https://restcountries.com/v3.1/all?fields=")
@@ -78,7 +78,7 @@ internal sealed class WorldDbContextSeed
             var startOfWeek = Enum.TryParse<DayOfWeek>(item.StartOfWeek, true, out var result)
                 ? result
                 : DayOfWeek.Monday;
-            
+
             var country = Country.Create(
                 int.Parse(item.Ccn3),
                 item.Cca2,
@@ -116,7 +116,7 @@ internal sealed class WorldDbContextSeed
     {
         if (string.IsNullOrEmpty(subregion))
             return region;
-        
+
         if (region != "Americas")
             return region;
 

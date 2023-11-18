@@ -11,23 +11,6 @@ public sealed class Country
     }
 #pragma warning restore CS8618
 
-    public static Country Create(int id, string alpha2, string alpha3, Uri flag, string region, string? subregion,
-        DayOfWeek startOfWeek)
-    {
-        if (!flag.IsAbsoluteUri)
-            throw new ArgumentException("Flag must be absolute url", nameof(flag));
-
-        return new Country(
-            id,
-            alpha2.ToUpperInvariant(),
-            alpha3.ToUpperInvariant(),
-            flag.ToString(),
-            region,
-            subregion,
-            startOfWeek
-        );
-    }
-
     private Country(int id, string alpha2, string alpha3, string flag, string region, string? subregion,
         DayOfWeek startOfWeek)
     {
@@ -62,6 +45,23 @@ public sealed class Country
     public string[] Currencies { get; private set; }
 
     public HashSet<CountryTranslation> Translations { get; private set; }
+
+    public static Country Create(int id, string alpha2, string alpha3, Uri flag, string region, string? subregion,
+        DayOfWeek startOfWeek)
+    {
+        if (!flag.IsAbsoluteUri)
+            throw new ArgumentException("Flag must be absolute url", nameof(flag));
+
+        return new Country(
+            id,
+            alpha2.ToUpperInvariant(),
+            alpha3.ToUpperInvariant(),
+            flag.ToString(),
+            region,
+            subregion,
+            startOfWeek
+        );
+    }
 
     public void AddTranslation(string language, string common, string official) =>
         Translations.Add(new CountryTranslation(Id, language, common, official));

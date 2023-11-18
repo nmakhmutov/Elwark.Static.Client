@@ -6,6 +6,6 @@
         <ProjectVersion>2.1</ProjectVersion>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="docker-compose.yml" />
+        <None Include="docker-compose.yml"/>
     </ItemGroup>
 </Project>

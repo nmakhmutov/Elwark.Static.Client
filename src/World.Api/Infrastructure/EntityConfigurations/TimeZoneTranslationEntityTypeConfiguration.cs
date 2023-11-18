@@ -29,7 +29,7 @@ internal sealed class TimeZoneTranslationEntityTypeConfiguration : IEntityTypeCo
             .HasColumnName("standard_name")
             .HasMaxLength(128)
             .IsRequired();
-        
+
         builder.Property(x => x.DisplayName)
             .HasColumnName("display_name")
             .HasMaxLength(128)

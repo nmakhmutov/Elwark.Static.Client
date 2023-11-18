@@ -15,18 +15,18 @@ internal sealed class TimeZoneService
     {
         var sql = language == "en"
             ? """
-                SELECT tz.name, tzt.display_name
-                FROM time_zones tz
-                         LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
-                ORDER BY tz.id
-                """
+              SELECT tz.name, tzt.display_name
+              FROM time_zones tz
+                       LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
+              ORDER BY tz.id
+              """
             : """
-                SELECT tz.name, COALESCE(tzt.display_name, tzd.display_name)
-                FROM time_zones tz
-                         LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
-                         LEFT JOIN time_zone_translations tzd ON tz.id = tzd.time_zone_id AND tzd.language = 'en'
-                ORDER BY tz.id
-                """;
+              SELECT tz.name, COALESCE(tzt.display_name, tzd.display_name)
+              FROM time_zones tz
+                       LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
+                       LEFT JOIN time_zone_translations tzd ON tz.id = tzd.time_zone_id AND tzd.language = 'en'
+              ORDER BY tz.id
+              """;
 
         await using var source = NpgsqlDataSource.Create(_connection);
         await using var command = source.CreateCommand(sql);
@@ -44,26 +44,26 @@ internal sealed class TimeZoneService
     {
         var sql = language == "en"
             ? """
-                SELECT tz.name,
-                       tz.utc_offset,
-                       tzt.standard_name,
-                       tzt.display_name
-                FROM time_zones tz
-                         LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
-                WHERE tz.name = $2
-                LIMIT 1
-                """
+              SELECT tz.name,
+                     tz.utc_offset,
+                     tzt.standard_name,
+                     tzt.display_name
+              FROM time_zones tz
+                       LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
+              WHERE tz.name = $2
+              LIMIT 1
+              """
             : """
-                SELECT tz.name,
-                       tz.utc_offset,
-                       COALESCE(tzt.standard_name, tzd.standard_name) AS standard_name,
-                       COALESCE(tzt.display_name, tzd.display_name) AS display_name
-                FROM time_zones tz
-                         LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
-                         LEFT JOIN time_zone_translations tzd ON tz.id = tzd.time_zone_id AND tzd.language = 'en'
-                WHERE tz.name = $2
-                LIMIT 1
-                """;
+              SELECT tz.name,
+                     tz.utc_offset,
+                     COALESCE(tzt.standard_name, tzd.standard_name) AS standard_name,
+                     COALESCE(tzt.display_name, tzd.display_name) AS display_name
+              FROM time_zones tz
+                       LEFT JOIN time_zone_translations tzt ON tz.id = tzt.time_zone_id AND tzt.language = $1
+                       LEFT JOIN time_zone_translations tzd ON tz.id = tzd.time_zone_id AND tzd.language = 'en'
+              WHERE tz.name = $2
+              LIMIT 1
+              """;
 
         await using var source = NpgsqlDataSource.Create(_connection);
         await using var command = source.CreateCommand(sql);
