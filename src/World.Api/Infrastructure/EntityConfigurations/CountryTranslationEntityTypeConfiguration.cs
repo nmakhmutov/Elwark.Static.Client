@@ -15,7 +15,7 @@ internal sealed class CountryTranslationEntityTypeConfiguration : IEntityTypeCon
 
         builder.Property(x => x.Id)
             .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+            .UseSerialColumn();
 
         builder.Property(x => x.CountryId)
             .HasColumnName("country_id")

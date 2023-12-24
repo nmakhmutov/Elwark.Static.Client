@@ -107,9 +107,8 @@ internal sealed class WorldDbContextSeed
             }
 
             await _dbContext.Countries.AddAsync(country);
+            await _dbContext.SaveChangesAsync();
         }
-
-        await _dbContext.SaveChangesAsync();
     }
 
     private static string GetRegion(string region, string? subregion)
@@ -150,8 +149,11 @@ internal sealed class WorldDbContextSeed
             }
         }
 
-        await _dbContext.TimeZones.AddRangeAsync(result.Values);
-        await _dbContext.SaveChangesAsync();
+        foreach (var zone in result)
+        {
+            await _dbContext.TimeZones.AddAsync(zone.Value);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     private sealed record CountryDto(

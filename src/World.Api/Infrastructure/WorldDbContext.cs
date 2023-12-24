@@ -13,13 +13,11 @@ public sealed class WorldDbContext : DbContext
     {
     }
 
-    public DbSet<Country> Countries { get; set; } = default!;
+    public DbSet<Country> Countries =>
+        Set<Country>();
 
-    public DbSet<CountryTranslation> CountryTranslations { get; set; } = default!;
-
-    public DbSet<TimeZone> TimeZones { get; set; } = default!;
-
-    public DbSet<TimeZoneTranslation> TimeZoneTranslations { get; set; } = default!;
+    public DbSet<TimeZone> TimeZones =>
+        Set<TimeZone>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

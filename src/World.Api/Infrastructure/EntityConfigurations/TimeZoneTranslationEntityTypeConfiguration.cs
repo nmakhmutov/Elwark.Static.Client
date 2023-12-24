@@ -15,7 +15,7 @@ internal sealed class TimeZoneTranslationEntityTypeConfiguration : IEntityTypeCo
 
         builder.Property(x => x.Id)
             .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+            .UseSerialColumn();
 
         builder.Property(x => x.TimeZoneId)
             .HasColumnName("time_zone_id");

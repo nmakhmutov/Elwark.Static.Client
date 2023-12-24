@@ -53,7 +53,8 @@ namespace World.Api.Infrastructure.Migrations
                 name: "country_translations",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     country_id = table.Column<int>(type: "integer", nullable: false),
                     language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     common = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
@@ -75,7 +76,8 @@ namespace World.Api.Infrastructure.Migrations
                 name: "time_zone_translations",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     time_zone_id = table.Column<int>(type: "integer", nullable: false),
                     language = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
                     standard_name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),

@@ -9,14 +9,14 @@ public sealed class CountryTranslation
 
     public CountryTranslation(int countryId, string language, string common, string official)
     {
-        Id = Guid.Empty;
+        Id = 0;
         CountryId = countryId;
         Language = language.ToUpperInvariant();
         Official = official;
         Common = common;
     }
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     public int CountryId { get; private set; }
 

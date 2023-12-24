@@ -5,11 +5,13 @@ namespace World.Api.Models;
 
 public sealed class Country
 {
-#pragma warning disable CS8618
     private Country()
     {
+        Alpha2 = Alpha3 = Region = Flag = string.Empty;
+        Languages = [];
+        Currencies = [];
+        Translations = [];
     }
-#pragma warning restore CS8618
 
     private Country(int id, string alpha2, string alpha3, string flag, string region, string? subregion,
         DayOfWeek startOfWeek)
@@ -21,9 +23,9 @@ public sealed class Country
         Region = region;
         Subregion = subregion;
         StartOfWeek = startOfWeek;
-        Languages = Array.Empty<string>();
-        Currencies = Array.Empty<string>();
-        Translations = new HashSet<CountryTranslation>();
+        Languages = [];
+        Currencies = [];
+        Translations = [];
     }
 
     public int Id { get; private set; }

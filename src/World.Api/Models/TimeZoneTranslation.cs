@@ -6,14 +6,14 @@ public sealed class TimeZoneTranslation
 {
     public TimeZoneTranslation(int timeZoneId, string language, string standardName, string displayName)
     {
-        Id = Guid.Empty;
+        Id = 0;
         TimeZoneId = timeZoneId;
         Language = language;
         StandardName = standardName;
         DisplayName = displayName;
     }
 
-    public Guid Id { get; private set; }
+    public int Id { get; private set; }
 
     public int TimeZoneId { get; private set; }
 
