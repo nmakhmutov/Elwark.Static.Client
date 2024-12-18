@@ -1,4 +1,4 @@
-version: '3.9'
+name: world
 
 networks:
   elwarknetwork:
@@ -22,7 +22,8 @@ services:
       - "Serilog__WriteTo__0__Args__outputTemplate=[{Timestamp:HH:mm:ss} {Level:u3}] {TraceId} {SourceContext}: {Message}{NewLine}{Exception}"
       #      - Serilog__WriteTo__0__Args__formatter=Serilog.Formatting.Compact.RenderedCompactJsonFormatter, Serilog.Formatting.Compact
       - Kestrel__EndPoints__Http__Url=http://+:80
-      - Postgresql__ConnectionString=Host=postgresql;Database=world;Username=master_account;Password=master_password
+      - ConnectionStrings__Postgresql=Host=postgresql;Database=world;Username=master_account;Password=master_password
+      - ConnectionStrings__Redis=redis:6379,resolveDns=True,abortConnect=false,defaultDatabase=10
     ports:
       - "5006:80"
     networks:

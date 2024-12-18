@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Options;
 using Serilog;
 using World.Api.Endpoints;
@@ -11,10 +12,6 @@ using World.Api.Services.TimeZone;
 
 const string appName = "Worlds.Api";
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services
-    .AddCorrelationId(options => options.UpdateTraceIdentifier = true)
-    .WithTraceIdentifierProvider();
 
 builder.Services
     .AddCors()
@@ -36,16 +33,28 @@ builder.Services
         options.SupportedUICultures = cultures;
         options.RequestCultureProviders = new List<IRequestCultureProvider>
         {
-            new QueryStringRequestCultureProvider { QueryStringKey = "language", UIQueryStringKey = "language" },
+            new QueryStringRequestCultureProvider
+            {
+                QueryStringKey = "language",
+                UIQueryStringKey = "language"
+            },
             new AcceptLanguageHeaderRequestCultureProvider()
         };
     });
 
-var postgresql = builder.Configuration["Postgresql:ConnectionString"]!;
+builder.Services
+    .AddStackExchangeRedisCache(options => options.Configuration = builder.Configuration.GetConnectionString("Redis"))
+    .AddHybridCache(options => options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromHours(1),
+        LocalCacheExpiration = TimeSpan.FromMinutes(30)
+    });
+
+var postgresql = builder.Configuration.GetConnectionString("Postgresql")!;
 
 builder.Services
-    .AddSingleton(_ => new CountryService(postgresql))
-    .AddSingleton(_ => new TimeZoneService(postgresql))
+    .AddSingleton(provider => new CountryService(postgresql, provider.GetRequiredService<HybridCache>()))
+    .AddSingleton(provider => new TimeZoneService(postgresql, provider.GetRequiredService<HybridCache>()))
     .AddDbContext<WorldDbContext>(options => options.UseNpgsql(postgresql));
 
 builder.Host
@@ -61,8 +70,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<WorldDbContext>();
     await dbContext.Database.MigrateAsync();
 
-    var options = scope.ServiceProvider.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
-    await new WorldDbContextSeed(dbContext, options.SupportedCultures!)
+    var options = scope.ServiceProvider.GetRequiredService<IOptions<RequestLocalizationOptions>>();
+    await new WorldDbContextSeed(dbContext, options.Value.SupportedCultures!)
         .SeedAsync();
 }
 
@@ -71,15 +80,15 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
         ForwardLimit = 10
     })
-    .UseCors(policyBuilder => policyBuilder
+    .UseCors(policy => policy
         .WithOrigins(builder.Configuration.GetRequiredSection("Cors").Get<string[]>()!)
         .WithMethods(HttpMethods.Get)
-        .AllowAnyHeader())
-    .UseCorrelationId()
+        .AllowAnyHeader()
+    )
     .UseRequestLocalization()
     .UseOutputCache();
 
 app.MapCountryEndpoints()
     .MapTimeZoneEndpoints();
 
-app.Run();
+await app.RunAsync();

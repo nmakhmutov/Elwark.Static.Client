@@ -11,7 +11,11 @@ internal sealed class CountryTranslationEntityTypeConfiguration : IEntityTypeCon
         builder.ToTable("country_translations");
 
         builder.HasKey(x => x.Id);
-        builder.HasAlternateKey(x => new { x.CountryId, x.Language });
+        builder.HasAlternateKey(x => new
+        {
+            x.CountryId,
+            x.Language
+        });
 
         builder.Property(x => x.Id)
             .HasColumnName("id")

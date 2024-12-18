@@ -11,7 +11,11 @@ internal sealed class TimeZoneTranslationEntityTypeConfiguration : IEntityTypeCo
         builder.ToTable("time_zone_translations");
 
         builder.HasKey(x => x.Id);
-        builder.HasAlternateKey(x => new { x.TimeZoneId, x.Language });
+        builder.HasAlternateKey(x => new
+        {
+            x.TimeZoneId,
+            x.Language
+        });
 
         builder.Property(x => x.Id)
             .HasColumnName("id")

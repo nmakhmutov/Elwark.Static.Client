@@ -35,7 +35,10 @@ internal sealed class WorldDbContextSeed
         {
             DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
         };
 
         var url = new StringBuilder("https://restcountries.com/v3.1/all?fields=")

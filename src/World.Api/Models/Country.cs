@@ -13,8 +13,15 @@ public sealed class Country
         Translations = [];
     }
 
-    private Country(int id, string alpha2, string alpha3, string flag, string region, string? subregion,
-        DayOfWeek startOfWeek)
+    private Country(
+        int id,
+        string alpha2,
+        string alpha3,
+        string flag,
+        string region,
+        string? subregion,
+        DayOfWeek startOfWeek
+    )
     {
         Id = id;
         Alpha2 = alpha2;
@@ -48,8 +55,15 @@ public sealed class Country
 
     public HashSet<CountryTranslation> Translations { get; private set; }
 
-    public static Country Create(int id, string alpha2, string alpha3, Uri flag, string region, string? subregion,
-        DayOfWeek startOfWeek)
+    public static Country Create(
+        int id,
+        string alpha2,
+        string alpha3,
+        Uri flag,
+        string region,
+        string? subregion,
+        DayOfWeek startOfWeek
+    )
     {
         if (!flag.IsAbsoluteUri)
             throw new ArgumentException("Flag must be absolute url", nameof(flag));

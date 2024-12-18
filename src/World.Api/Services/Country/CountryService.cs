@@ -1,25 +1,27 @@
-using System.Collections.Concurrent;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Microsoft.Extensions.Caching.Hybrid;
 using Npgsql;
+using World.Api.Models;
 
 namespace World.Api.Services.Country;
 
 internal sealed class CountryService
 {
-    private static readonly ConcurrentBag<string> Languages = new();
+    private readonly HybridCache _cache;
     private readonly string _connection;
 
-    public CountryService(string connection) =>
-        _connection = connection;
-
-    public async IAsyncEnumerable<CountryOverview> GetAsync(CultureInfo culture,
-        [EnumeratorCancellation] CancellationToken ct = default)
+    public CountryService(string connection, HybridCache cache)
     {
-        var language = await GetLanguageOrDefault(culture.TwoLetterISOLanguageName)
-            .ConfigureAwait(false);
+        _connection = connection;
+        _cache = cache;
+    }
 
+    public async IAsyncEnumerable<CountryOverview> GetAsync(
+        Language language,
+        [EnumeratorCancellation] CancellationToken ct = default
+    )
+    {
         const string sql =
             """
             SELECT c.alpha2,
@@ -31,32 +33,43 @@ internal sealed class CountryService
             ORDER BY ctr.common
             """;
 
-        await using var source = NpgsqlDataSource.Create(_connection);
-        await using var command = source.CreateCommand(sql);
-        command.Parameters.AddWithValue(language);
+        var result = await GetLanguageOrDefault(language, ct);
+        var countries = await _cache.GetOrCreateAsync(
+            CacheKey.Countries(result),
+            async token =>
+            {
+                await using var source = NpgsqlDataSource.Create(_connection);
+                await using var command = source.CreateCommand(sql);
+                command.Parameters.AddWithValue(result.ToString());
 
-        await using var reader = await command.ExecuteReaderAsync(ct)
-            .ConfigureAwait(false);
+                await using var reader = await command.ExecuteReaderAsync(token);
 
-        while (await reader.ReadAsync(ct).ConfigureAwait(false))
-        {
-            ct.ThrowIfCancellationRequested();
-            yield return new CountryOverview(
-                reader.GetString(0),
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetString(3)
-            );
-        }
+                var list = new List<CountryOverview>();
+                while (await reader.ReadAsync(token))
+                {
+                    list.Add(new CountryOverview(
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3)
+                    ));
+                }
+
+                return list;
+            },
+            cancellationToken: ct
+        );
+
+        foreach (var country in countries)
+            yield return country;
     }
 
-    public async Task<CountryDetails?> GetAsync(string code, CultureInfo culture, CancellationToken ct = default)
+    public async Task<CountryDetails?> GetAsync(string code, Language language, CancellationToken ct = default)
     {
         if (code.Length is < 2 or > 3)
             return null;
 
-        var language = await GetLanguageOrDefault(culture.TwoLetterISOLanguageName)
-            .ConfigureAwait(false);
+        var result = await GetLanguageOrDefault(language, ct);
 
         var sb = new StringBuilder(
             """
@@ -78,7 +91,7 @@ internal sealed class CountryService
 
         await using var source = NpgsqlDataSource.Create(_connection);
         await using var command = source.CreateCommand(sb.ToString());
-        command.Parameters.AddWithValue(language);
+        command.Parameters.AddWithValue(result.ToString());
         command.Parameters.AddWithValue(code);
 
         await using var reader = await command.ExecuteReaderAsync(ct)
@@ -100,19 +113,26 @@ internal sealed class CountryService
         return null;
     }
 
-    private async ValueTask<string> GetLanguageOrDefault(string language)
+    private async Task<Language> GetLanguageOrDefault(Language language, CancellationToken ct)
     {
-        if (Languages.IsEmpty)
-        {
-            await using var source = NpgsqlDataSource.Create(_connection);
-            await using var command = source.CreateCommand("SELECT DISTINCT language FROM country_translations");
+        var languages = await _cache.GetOrCreateAsync(
+            CacheKey.CountryLanguages(),
+            async token =>
+            {
+                await using var source = NpgsqlDataSource.Create(_connection);
+                await using var command = source.CreateCommand("SELECT DISTINCT language FROM country_translations");
 
-            await using var reader = await command.ExecuteReaderAsync();
+                await using var reader = await command.ExecuteReaderAsync(token);
 
-            while (await reader.ReadAsync())
-                Languages.Add(reader.GetString(0));
-        }
+                var list = new List<Language>();
+                while (await reader.ReadAsync(token))
+                    list.Add(new Language(reader.GetString(0)));
 
-        return Languages.Contains(language, StringComparer.OrdinalIgnoreCase) ? language.ToUpperInvariant() : "EN";
+                return list.ToHashSet();
+            },
+            cancellationToken: ct
+        );
+
+        return languages.Contains(language) ? language : Language.English;
     }
 }

@@ -9,7 +9,7 @@ public sealed class TimeZone
         Id = 0;
         Name = name;
         UtcOffset = utcOffset;
-        Translations = new HashSet<TimeZoneTranslation>();
+        Translations = [];
     }
 
     public int Id { get; private set; }
