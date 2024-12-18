@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Compose build world.api
-        run: sudo -E docker-compose build world.api
+        run: sudo -E docker compose build world.api
         working-directory: ${{ env.WORKING_DIRECTORY }}
         shell: bash
         env:
